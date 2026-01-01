@@ -1,0 +1,24 @@
+---
+import { getLangFromUrl, getLocalizedPath, languages, type Lang } from '../i18n/utils';
+
+const lang = getLangFromUrl(Astro.url) as Lang;
+const currentPath = Astro.url.pathname;
+---
+
+<div class="flex items-center space-x-2">
+  {
+    Object.entries(languages).map(([langCode]) => (
+      <a
+        href={getLocalizedPath(currentPath, langCode as Lang)}
+        class:list={[
+          'rounded-full px-3 py-1 text-sm font-medium transition-all duration-300',
+          lang === langCode
+            ? 'bg-brand-light/50 text-brand'
+            : 'text-ink-muted hover:bg-brand-light/30 hover:text-brand',
+        ]}
+      >
+        {langCode.toUpperCase()}
+      </a>
+    ))
+  }
+</div>

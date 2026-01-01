@@ -1,0 +1,36 @@
+---
+interface Props {
+  name: string;
+  tagline: string;
+  description: string;
+  ctaPrimary: string;
+  ctaSecondary: string;
+  ctaPrimaryHref: string;
+  ctaSecondaryHref: string;
+}
+
+const { name, tagline, description, ctaPrimary, ctaSecondary, ctaPrimaryHref, ctaSecondaryHref } =
+  Astro.props;
+---
+
+<section class="bg-white py-20 dark:bg-slate-900">
+  <div class="mx-auto max-w-4xl px-6 text-center">
+    <h1 class="mb-4 text-4xl font-bold text-slate-800 dark:text-white md:text-5xl">
+      {name}
+    </h1>
+    <p class="mb-4 text-xl text-blue-500 md:text-2xl">
+      {tagline}
+    </p>
+    <p class="mx-auto mb-8 max-w-2xl text-lg text-slate-500 dark:text-slate-400">
+      {description}
+    </p>
+    <div class="flex flex-col justify-center gap-4 sm:flex-row">
+      <a href={ctaPrimaryHref} class="btn-primary">
+        {ctaPrimary}
+      </a>
+      <a href={ctaSecondaryHref} class="btn-secondary">
+        {ctaSecondary}
+      </a>
+    </div>
+  </div>
+</section>

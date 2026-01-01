@@ -1,0 +1,8 @@
+# robots.txt
+# TODO: Update with your domain
+User-agent: *
+Allow: /
+
+# Sitemap location
+# TODO: Update with your domain
+Sitemap: https://example.com/sitemap-index.xml

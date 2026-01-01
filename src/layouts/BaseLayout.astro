@@ -1,0 +1,349 @@
+---
+import '../styles/global.css';
+import Header from '../components/Header.astro';
+import Footer from '../components/Footer.astro';
+import { getLangFromUrl, useTranslations, type Lang } from '../i18n/utils';
+import SpeedInsights from '@vercel/speed-insights/astro';
+
+interface Props {
+  title?: string;
+  description?: string;
+  image?: string;
+  type?: 'website' | 'article';
+  // Article-specific properties
+  publishedDate?: Date;
+  modifiedDate?: Date;
+  tags?: string[];
+  // Page type for specialized schemas
+  pageType?: 'home' | 'about' | 'blog' | 'blogPost' | 'contact';
+}
+
+const lang = getLangFromUrl(Astro.url) as Lang;
+const t = useTranslations(lang);
+const altLang = lang === 'ja' ? 'en' : 'ja';
+
+const {
+  title = t.site.title,
+  description = t.site.description,
+  image = '/favicon.svg',
+  type = 'website',
+  publishedDate,
+  modifiedDate,
+  tags = [],
+  pageType = 'home',
+} = Astro.props;
+
+// TODO: Update with your production domain
+const siteUrl = 'https://example.com';
+const canonicalUrl = `${siteUrl}${Astro.url.pathname}`;
+const altUrl = `${siteUrl}${Astro.url.pathname.replace(`/${lang}/`, `/${altLang}/`)}`;
+
+// Generate dynamic OG image URL based on current page
+const getOgImagePath = () => {
+  const pathname = Astro.url.pathname;
+  // Remove trailing slash and leading slash
+  const cleanPath = pathname.replace(/^\/|\/$/g, '');
+  // If it's the home page, use the language slug
+  if (cleanPath === '' || cleanPath === 'ja' || cleanPath === 'en') {
+    return `/og/${cleanPath || 'ja'}.png`;
+  }
+  // For other pages like /ja/about, /en/contact, etc.
+  return `/og/${cleanPath}.png`;
+};
+
+const defaultOgImage = getOgImagePath();
+const ogImageUrl =
+  image === '/favicon.svg'
+    ? `${siteUrl}${defaultOgImage}`
+    : image.startsWith('http')
+      ? image
+      : `${siteUrl}${image}`;
+
+// TODO: Update with your information
+// Author/Person structured data
+const personSchema = {
+  '@type': 'Person',
+  '@id': `${siteUrl}/#person`,
+  name: 'Your Name', // TODO: Update
+  alternateName: 'your-handle', // TODO: Update
+  url: siteUrl,
+  image: `${siteUrl}/favicon.svg`,
+  jobTitle: lang === 'ja' ? 'あなたの職業' : 'Your Job Title', // TODO: Update
+  sameAs: [
+    // TODO: Update with your social links
+    'https://github.com/your-username',
+    'https://x.com/your-handle',
+    'https://www.linkedin.com/in/your-profile/',
+  ],
+};
+
+// Organization structured data
+const organizationSchema = {
+  '@type': 'Organization',
+  '@id': `${siteUrl}/#organization`,
+  name: 'Your Site Name', // TODO: Update
+  url: siteUrl,
+  logo: {
+    '@type': 'ImageObject',
+    url: `${siteUrl}/favicon.svg`,
+    width: 512,
+    height: 512,
+  },
+  founder: { '@id': `${siteUrl}/#person` },
+  sameAs: [
+    // TODO: Update with your social links
+    'https://github.com/your-username',
+    'https://x.com/your-handle',
+    'https://www.linkedin.com/in/your-profile/',
+  ],
+};
+
+// Helper function to format date for schema.org
+const formatSchemaDate = (date: Date | undefined) => date?.toISOString();
+
+// Build page-specific schema based on pageType
+const buildPageSchema = () => {
+  const baseGraph = [personSchema, organizationSchema];
+
+  // WebSite schema (always included)
+  const websiteSchema = {
+    '@type': 'WebSite',
+    '@id': `${siteUrl}/#website`,
+    name: t.site.title,
+    description: t.site.description,
+    url: siteUrl,
+    inLanguage: lang === 'ja' ? 'ja-JP' : 'en-US',
+    publisher: { '@id': `${siteUrl}/#organization` },
+    potentialAction: {
+      '@type': 'SearchAction',
+      target: `${siteUrl}/search?q={search_term_string}`,
+      'query-input': 'required name=search_term_string',
+    },
+  };
+
+  // Article/BlogPosting schema for blog posts
+  if (type === 'article' || pageType === 'blogPost') {
+    return {
+      '@context': 'https://schema.org',
+      '@graph': [
+        ...baseGraph,
+        websiteSchema,
+        {
+          '@type': 'BlogPosting',
+          '@id': `${canonicalUrl}#article`,
+          headline: title,
+          description: description,
+          url: canonicalUrl,
+          image: {
+            '@type': 'ImageObject',
+            url: ogImageUrl,
+            width: 1200,
+            height: 630,
+          },
+          author: { '@id': `${siteUrl}/#person` },
+          publisher: { '@id': `${siteUrl}/#organization` },
+          mainEntityOfPage: {
+            '@type': 'WebPage',
+            '@id': canonicalUrl,
+          },
+          inLanguage: lang === 'ja' ? 'ja-JP' : 'en-US',
+          ...(publishedDate && { datePublished: formatSchemaDate(publishedDate) }),
+          ...(modifiedDate && { dateModified: formatSchemaDate(modifiedDate) }),
+          ...(!modifiedDate && publishedDate && { dateModified: formatSchemaDate(publishedDate) }),
+          ...(tags.length > 0 && { keywords: tags.join(', ') }),
+        },
+      ],
+    };
+  }
+
+  // ProfilePage schema for About page
+  if (pageType === 'about') {
+    return {
+      '@context': 'https://schema.org',
+      '@graph': [
+        ...baseGraph,
+        websiteSchema,
+        {
+          '@type': 'ProfilePage',
+          '@id': `${canonicalUrl}#profilepage`,
+          url: canonicalUrl,
+          name: title,
+          description: description,
+          mainEntity: { '@id': `${siteUrl}/#person` },
+          inLanguage: lang === 'ja' ? 'ja-JP' : 'en-US',
+        },
+      ],
+    };
+  }
+
+  // ContactPage schema for Contact page
+  if (pageType === 'contact') {
+    return {
+      '@context': 'https://schema.org',
+      '@graph': [
+        ...baseGraph,
+        websiteSchema,
+        {
+          '@type': 'ContactPage',
+          '@id': `${canonicalUrl}#contactpage`,
+          url: canonicalUrl,
+          name: title,
+          description: description,
+          mainEntity: { '@id': `${siteUrl}/#organization` },
+          inLanguage: lang === 'ja' ? 'ja-JP' : 'en-US',
+        },
+      ],
+    };
+  }
+
+  // CollectionPage schema for Blog index
+  if (pageType === 'blog') {
+    return {
+      '@context': 'https://schema.org',
+      '@graph': [
+        ...baseGraph,
+        websiteSchema,
+        {
+          '@type': 'CollectionPage',
+          '@id': `${canonicalUrl}#collectionpage`,
+          url: canonicalUrl,
+          name: title,
+          description: description,
+          isPartOf: { '@id': `${siteUrl}/#website` },
+          about: { '@id': `${siteUrl}/#person` },
+          inLanguage: lang === 'ja' ? 'ja-JP' : 'en-US',
+        },
+      ],
+    };
+  }
+
+  // Default WebPage schema for home and other pages
+  return {
+    '@context': 'https://schema.org',
+    '@graph': [
+      ...baseGraph,
+      websiteSchema,
+      {
+        '@type': 'WebPage',
+        '@id': `${canonicalUrl}#webpage`,
+        url: canonicalUrl,
+        name: title,
+        description: description,
+        isPartOf: { '@id': `${siteUrl}/#website` },
+        about: { '@id': `${siteUrl}/#person` },
+        inLanguage: lang === 'ja' ? 'ja-JP' : 'en-US',
+      },
+    ],
+  };
+};
+
+// JSON-LD structured data
+const jsonLd = buildPageSchema();
+---
+
+<!doctype html>
+<html lang={lang}>
+  <head>
+    <meta charset="UTF-8" />
+    <!-- Dark Mode FOUC Prevention - Must be first script -->
+    <script is:inline>
+      (function () {
+        const theme = localStorage.getItem('theme');
+        const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+        // Apply dark mode if:
+        // 1. User explicitly set 'dark'
+        // 2. User set 'system' (or no preference) AND system prefers dark
+        const shouldBeDark = theme === 'dark' || ((theme === 'system' || !theme) && prefersDark);
+
+        if (shouldBeDark) {
+          document.documentElement.classList.add('dark');
+        } else {
+          document.documentElement.classList.remove('dark');
+        }
+      })();
+    </script>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="description" content={description} />
+    <!-- TODO: Update with your name -->
+    <meta name="author" content="Your Name" />
+    <meta name="robots" content="index, follow" />
+    <meta name="theme-color" content="#3B82F6" />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <link rel="apple-touch-icon" href="/favicon.svg" />
+    <meta name="generator" content={Astro.generator} />
+    <title>{title}</title>
+
+    <!-- DNS Prefetch & Preconnect for Performance -->
+    <link rel="dns-prefetch" href="https://www.googletagmanager.com" />
+    <link rel="preconnect" href="https://www.googletagmanager.com" crossorigin />
+    <link rel="dns-prefetch" href="https://www.google-analytics.com" />
+    <link rel="preconnect" href="https://www.google-analytics.com" crossorigin />
+
+    <!-- Google Fonts - JetBrains Mono for tech aesthetic -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600&display=swap"
+      rel="stylesheet"
+    />
+
+    <!-- Canonical URL -->
+    <link rel="canonical" href={canonicalUrl} />
+
+    <!-- Hreflang for multilingual -->
+    <link rel="alternate" hreflang={lang === 'ja' ? 'ja' : 'en'} href={canonicalUrl} />
+    <link rel="alternate" hreflang={altLang === 'ja' ? 'ja' : 'en'} href={altUrl} />
+    <link rel="alternate" hreflang="x-default" href={`${siteUrl}/ja/`} />
+
+    <!-- Open Graph / Facebook -->
+    <meta property="og:type" content={type} />
+    <meta property="og:url" content={canonicalUrl} />
+    <meta property="og:title" content={title} />
+    <meta property="og:description" content={description} />
+    <meta property="og:image" content={ogImageUrl} />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:image:alt" content={title} />
+    <meta property="og:locale" content={lang === 'ja' ? 'ja_JP' : 'en_US'} />
+    <meta property="og:locale:alternate" content={lang === 'ja' ? 'en_US' : 'ja_JP'} />
+    <!-- TODO: Update with your site name -->
+    <meta property="og:site_name" content="Your Site Name" />
+
+    <!-- Twitter Card -->
+    <meta name="twitter:card" content="summary_large_image" />
+    <!-- TODO: Update with your Twitter handle -->
+    <meta name="twitter:site" content="@your-handle" />
+    <meta name="twitter:creator" content="@your-handle" />
+    <meta name="twitter:title" content={title} />
+    <meta name="twitter:description" content={description} />
+    <meta name="twitter:image" content={ogImageUrl} />
+
+    <!-- JSON-LD Structured Data -->
+    <script is:inline type="application/ld+json" set:html={JSON.stringify(jsonLd)} />
+
+    <!-- Google Search Console verification -->
+    <!-- TODO: Update with your Google Search Console verification code -->
+    <meta name="google-site-verification" content="YOUR_GOOGLE_SITE_VERIFICATION_CODE" />
+
+    <!-- Google Analytics -->
+    <!-- TODO: Update with your Google Analytics ID (e.g., G-XXXXXXXXXX) -->
+    <script is:inline async src="https://www.googletagmanager.com/gtag/js?id=G-XXXXXXXXXX"></script>
+    <script is:inline src="/scripts/analytics.js"></script>
+
+    <!-- RSS Feed -->
+    <link
+      rel="alternate"
+      type="application/rss+xml"
+      title={`${t.site.title} RSS Feed`}
+      href={`${siteUrl}/rss.xml`}
+    />
+  </head>
+  <body class="flex min-h-screen flex-col bg-surface">
+    <Header />
+    <main class="flex-1">
+      <slot />
+    </main>
+    <Footer />
+    <SpeedInsights />
+  </body>
+</html>

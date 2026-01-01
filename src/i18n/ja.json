@@ -1,0 +1,75 @@
+{
+  "site": {
+    "title": "サイト名",
+    "description": "サイトの説明文をここに記入してください。SEOやSNSシェア時に使用されます。"
+  },
+  "nav": {
+    "home": "ホーム",
+    "blog": "ブログ",
+    "contact": "お問い合わせ"
+  },
+  "hero": {
+    "greeting": "",
+    "name": "サイト名",
+    "role": "キャッチコピー",
+    "description": "あなたのビジネスやサービスについての簡単な紹介文を記入してください。何を提供しているかを説明しましょう。",
+    "cta": {
+      "contact": "お問い合わせ",
+      "about": "詳しく見る"
+    }
+  },
+  "features": {
+    "title": "特徴",
+    "subtitle": "私たちが提供するもの",
+    "items": [
+      {
+        "title": "特徴1",
+        "description": "最初の特徴やサービスの説明。ユーザーへのメリットを説明してください。"
+      },
+      {
+        "title": "特徴2",
+        "description": "2つ目の特徴やサービスの説明。ユーザーへのメリットを説明してください。"
+      },
+      {
+        "title": "特徴3",
+        "description": "3つ目の特徴やサービスの説明。ユーザーへのメリットを説明してください。"
+      }
+    ]
+  },
+  "cta": {
+    "title": "始めませんか？",
+    "description": "お気軽にお問い合わせください。",
+    "button": "お問い合わせ"
+  },
+  "contact": {
+    "title": "お問い合わせ",
+    "subtitle": "ご連絡・ご相談",
+    "description": "お気軽にお問い合わせください。",
+    "form": {
+      "name": "お名前",
+      "email": "メールアドレス",
+      "company": "会社名（任意）",
+      "subject": "件名",
+      "message": "メッセージ",
+      "submit": "送信する",
+      "submitting": "送信中...",
+      "success": "送信が完了しました。ありがとうございます！",
+      "error": "送信に失敗しました。もう一度お試しください。"
+    }
+  },
+  "blog": {
+    "title": "ブログ",
+    "subtitle": "記事・お知らせ",
+    "readMore": "続きを読む",
+    "noPosts": "まだ記事がありません",
+    "backToList": "記事一覧に戻る"
+  },
+  "footer": {
+    "copyright": "All rights reserved."
+  },
+  "notFound": {
+    "title": "ページが見つかりません",
+    "description": "お探しのページは存在しないか、移動した可能性があります。",
+    "backHome": "ホームに戻る"
+  }
+}

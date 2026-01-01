@@ -1,0 +1,56 @@
+---
+import '../styles/global.css';
+import Header from '../components/Header.astro';
+import Footer from '../components/Footer.astro';
+import { useTranslations, type Lang } from '../i18n/utils';
+
+const lang: Lang = 'ja';
+const t = useTranslations(lang);
+---
+
+<!doctype html>
+<html lang={lang}>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="description" content={t.notFound.description} />
+    <meta name="robots" content="noindex, nofollow" />
+    <meta name="theme-color" content="#3B82F6" />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <title>404 - {t.notFound.title} | {t.site.title}</title>
+  </head>
+  <body class="flex min-h-screen flex-col bg-white dark:bg-slate-900">
+    <Header />
+    <main class="flex flex-1 items-center justify-center">
+      <div class="mx-auto max-w-2xl px-6 py-20 text-center">
+        <!-- 404 Number -->
+        <div class="mb-8">
+          <span class="text-9xl font-bold text-blue-500/20">
+            404
+          </span>
+        </div>
+
+        <!-- Title -->
+        <h1 class="mb-4 text-3xl font-bold text-slate-800 dark:text-white md:text-4xl">
+          {t.notFound.title}
+        </h1>
+
+        <!-- Description -->
+        <p class="mb-8 text-lg text-slate-500 dark:text-slate-400">
+          {t.notFound.description}
+        </p>
+
+        <!-- Back to Home Buttons -->
+        <div class="flex flex-col justify-center gap-4 sm:flex-row">
+          <a href="/ja/" class="btn-primary">
+            {t.notFound.backHome} (JP)
+          </a>
+          <a href="/en/" class="btn-secondary">
+            {useTranslations('en').notFound.backHome} (EN)
+          </a>
+        </div>
+      </div>
+    </main>
+    <Footer />
+  </body>
+</html>

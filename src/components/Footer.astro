@@ -1,0 +1,79 @@
+---
+import { getLangFromUrl, useTranslations, getLocalizedPath, type Lang } from '../i18n/utils';
+import { Icon } from 'astro-icon/components';
+
+const lang = getLangFromUrl(Astro.url) as Lang;
+const t = useTranslations(lang);
+
+const currentYear = new Date().getFullYear();
+
+const footerLinks = [
+  { href: getLocalizedPath('/', lang), label: 'Home' },
+  { href: getLocalizedPath('/blog', lang), label: 'Blog' },
+  { href: getLocalizedPath('/contact', lang), label: 'Contact' },
+];
+
+// TODO: Update with your social links
+const socialLinks = [
+  {
+    name: 'GitHub',
+    href: 'https://github.com/your-username',
+    icon: 'lucide:github',
+  },
+  {
+    name: 'X (Twitter)',
+    href: 'https://x.com/your-handle',
+    icon: 'lucide:twitter',
+  },
+];
+---
+
+<footer class="border-t border-slate-200 bg-slate-800 dark:border-slate-700 dark:bg-slate-900">
+  <div class="mx-auto max-w-6xl px-4 py-12 sm:px-6 lg:px-8">
+    <div class="flex flex-col items-center text-center">
+      <!-- Logo -->
+      <!-- TODO: Update with your site name -->
+      <a href={getLocalizedPath('/', lang)} class="mb-6 flex items-center justify-center gap-2">
+        <img src="/favicon.svg" alt="Site Logo" class="h-8 w-8" />
+        <span class="text-lg font-bold text-white">Site Name</span>
+      </a>
+
+      <!-- Navigation Links -->
+      <div class="mb-6 flex flex-wrap justify-center gap-6">
+        {
+          footerLinks.map((link) => (
+            <a
+              href={link.href}
+              class="text-slate-400 transition-colors hover:text-white"
+            >
+              {link.label}
+            </a>
+          ))
+        }
+      </div>
+
+      <!-- Social Links -->
+      <div class="mb-6 flex items-center space-x-4">
+        {
+          socialLinks.map((link) => (
+            <a
+              href={link.href}
+              target="_blank"
+              rel="noopener noreferrer"
+              class="rounded-full p-2 text-slate-400 transition-colors hover:bg-slate-700 hover:text-white"
+              aria-label={link.name}
+            >
+              <Icon name={link.icon} class="h-5 w-5" />
+            </a>
+          ))
+        }
+      </div>
+
+      <!-- Copyright -->
+      <!-- TODO: Update with your site name -->
+      <p class="text-sm text-slate-500">
+        &copy; {currentYear} Your Site Name. {t.footer.copyright}
+      </p>
+    </div>
+  </div>
+</footer>

@@ -1,0 +1,41 @@
+---
+import { getLangFromUrl, getLocalizedPath, type Lang } from '../i18n/utils';
+
+interface BreadcrumbItem {
+  label: string;
+  href?: string;
+}
+
+interface Props {
+  items: BreadcrumbItem[];
+}
+
+const { items } = Astro.props;
+const lang = getLangFromUrl(Astro.url) as Lang;
+---
+
+<nav aria-label="Breadcrumb" class="mb-6">
+  <ol class="flex flex-wrap items-center gap-2 text-sm text-slate-500 dark:text-slate-400">
+    <li>
+      <a href={getLocalizedPath('/', lang)} class="transition-colors hover:text-blue-500">
+        Home
+      </a>
+    </li>
+    {
+      items.map((item) => (
+        <>
+          <li class="text-slate-400 dark:text-slate-600">/</li>
+          <li>
+            {item.href ? (
+              <a href={item.href} class="transition-colors hover:text-blue-500">
+                {item.label}
+              </a>
+            ) : (
+              <span class="text-slate-800 dark:text-white">{item.label}</span>
+            )}
+          </li>
+        </>
+      ))
+    }
+  </ol>
+</nav>

@@ -1,0 +1,75 @@
+{
+  "site": {
+    "title": "Your Site Name",
+    "description": "Your site description goes here. This will be used for SEO and social sharing."
+  },
+  "nav": {
+    "home": "Home",
+    "blog": "Blog",
+    "contact": "Contact"
+  },
+  "hero": {
+    "greeting": "",
+    "name": "Your Site Name",
+    "role": "Your Tagline Here",
+    "description": "Write a brief introduction about your business or service. Describe what you do and what value you provide.",
+    "cta": {
+      "contact": "Get in Touch",
+      "about": "Learn More"
+    }
+  },
+  "features": {
+    "title": "Features",
+    "subtitle": "What we offer",
+    "items": [
+      {
+        "title": "Feature One",
+        "description": "Description of your first feature or service. Explain the benefit to users."
+      },
+      {
+        "title": "Feature Two",
+        "description": "Description of your second feature or service. Explain the benefit to users."
+      },
+      {
+        "title": "Feature Three",
+        "description": "Description of your third feature or service. Explain the benefit to users."
+      }
+    ]
+  },
+  "cta": {
+    "title": "Ready to Get Started?",
+    "description": "Contact us today to learn more about how we can help you.",
+    "button": "Contact Us"
+  },
+  "contact": {
+    "title": "Contact",
+    "subtitle": "Get in touch",
+    "description": "Feel free to reach out for inquiries or collaborations.",
+    "form": {
+      "name": "Name",
+      "email": "Email",
+      "company": "Company (optional)",
+      "subject": "Subject",
+      "message": "Message",
+      "submit": "Send Message",
+      "submitting": "Sending...",
+      "success": "Message sent successfully. Thank you!",
+      "error": "Failed to send. Please try again."
+    }
+  },
+  "blog": {
+    "title": "Blog",
+    "subtitle": "Articles and Updates",
+    "readMore": "Read more",
+    "noPosts": "No posts yet",
+    "backToList": "Back to all posts"
+  },
+  "footer": {
+    "copyright": "All rights reserved."
+  },
+  "notFound": {
+    "title": "Page Not Found",
+    "description": "The page you're looking for doesn't exist or may have been moved.",
+    "backHome": "Back to Home"
+  }
+}
